@@ -1,5 +1,7 @@
 import requests
 import time
+import json
+from pprint import pprint
 
 APP_ID = 6485129
 TOKEN = '7b23e40ad10e08d3b7a8ec0956f2c57910c455e886b480b7d9fb59859870658c4a0b8fdc4dd494db19099'
@@ -20,13 +22,47 @@ def get_friends(user_id):
 
 def get_groups(user_id):
     response = requests.get(''.join(('https://api.vk.com/method/groups.get?user_id=',user_id,'&v=5.52&access_token=', TOKEN)))
-    return response.json()['response']['items']
+    if 'response' in response.json():
+        return response.json()['response']['items']
+    else:
+        return None
+
+
+def get_group_by_id(group_id):
+    response = requests.get(''.join(('https://api.vk.com/method/groups.getById?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
+    return response.json()['response']
+
+
+def output(unique_groups):
+    ans = []
+    for unique_group in unique_groups:
+        print('⦁ ⦁ ⦁')
+        group = get_group_by_id(str(unique_group))
+        
+        group_json = {'name':group[0]['name'], 'gid':group[0]['id']}
+        ans.append(group_json)
+        time.sleep(2)
+    ans = json.dumps(ans)
+    pprint(ans)
 
 
 def main():
-    friends = get_friends(get_id())
+    user_id = get_id()
+    friends = get_friends(user_id)
+    user_groups = get_groups(user_id)
+    i = 0
     for friend in friends:
-        print(get_groups(str(friend)))
-        time.sleep(int(friend)/100000000)
+        i+= 1
+        print('⦁ ⦁ ⦁')
+        try:
+            for group in get_groups(str(friend)):
+                if group in user_groups:
+                    user_groups.remove(group)
+        except:
+            print('Нельзя получить информацию о пользователе {}'.format(friend))
+        if i>= 1000:
+            break
+        time.sleep(1.5)
+    output(user_groups)
 
 main()
