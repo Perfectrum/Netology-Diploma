@@ -29,8 +29,12 @@ def get_groups(user_id):
 
 
 def get_group_by_id(group_id):
-    response = requests.get(''.join(('https://api.vk.com/method/groups.getById?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
-    return response.json()['response']
+    response_for_name = requests.get(''.join(('https://api.vk.com/method/groups.getById?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
+    response_for_count = requests.get(''.join(('https://api.vk.com/method/groups.getMembers?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
+    group = []
+    group.append(response_for_name.json()['response'])
+    group.append(response_for_count.json()['response'])
+    return group
 
 
 def output(unique_groups):
@@ -38,12 +42,11 @@ def output(unique_groups):
     for unique_group in unique_groups:
         print('⦁ ⦁ ⦁')
         group = get_group_by_id(str(unique_group))
-        
-        group_json = {'name':group[0]['name'], 'gid':group[0]['id']}
+        group_json = {'name':group[0][0]['name'], 'gid':group[0][0]['id'], 'members_count':group[1]['count']}
         ans.append(group_json)
         time.sleep(2)
     ans = json.dumps(ans)
-    pprint(ans)
+    print(ans)
 
 
 def main():
