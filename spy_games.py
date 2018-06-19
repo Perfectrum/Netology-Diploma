@@ -29,11 +29,12 @@ def get_groups(user_id):
 
 
 def get_group_by_id(group_id):
-    response_for_name = requests.get(''.join(('https://api.vk.com/method/groups.getById?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
-    response_for_count = requests.get(''.join(('https://api.vk.com/method/groups.getMembers?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
-    group = []
-    group.append(response_for_name.json()['response'])
-    group.append(response_for_count.json()['response'])
+    response = requests.get(''.join(('https://api.vk.com/method/groups.getById?lang=1&group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
+    group_name = response.json()['response'][0]['name']
+    response = requests.get(''.join(('https://api.vk.com/method/groups.getMembers?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
+    group_count = response.json()['response']['count']
+    print(group_name)
+    group = [group_name, group_count]
     return group
 
 
@@ -42,11 +43,12 @@ def output(unique_groups):
     for unique_group in unique_groups:
         print('⦁ ⦁ ⦁')
         group = get_group_by_id(str(unique_group))
-        group_json = {'name':group[0][0]['name'], 'gid':group[0][0]['id'], 'members_count':group[1]['count']}
+        group_json = {'name':unique_group, 'gid':group[0], 'members_count':group[1]}
         ans.append(group_json)
         time.sleep(2)
+    ans = json.dumps(ans, ensure_ascii=False)
     with open('groups.json', 'w') as f:
-        f.write(json.dumps(ans))
+        f.write(ans)
 
 
 def main():
