@@ -63,7 +63,7 @@ def main():
                     user_groups.remove(group)
         except:
             print('Нельзя получить информацию о пользователе {}'.format(friend))
-        if i>= 10:
+        if i>= 1000:
             break
         time.sleep(1.5)
     output(user_groups)
