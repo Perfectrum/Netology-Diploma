@@ -1,7 +1,6 @@
 import requests
 import time
 import json
-from pprint import pprint
 
 APP_ID = 6485129
 TOKEN = '7b23e40ad10e08d3b7a8ec0956f2c57910c455e886b480b7d9fb59859870658c4a0b8fdc4dd494db19099'
@@ -33,7 +32,6 @@ def get_group_by_id(group_id):
     group_name = response.json()['response'][0]['name']
     response = requests.get(''.join(('https://api.vk.com/method/groups.getMembers?group_id=',group_id,'&v=5.52&access_token=', TOKEN)))
     group_count = response.json()['response']['count']
-    print(group_name)
     group = [group_name, group_count]
     return group
 
@@ -46,8 +44,8 @@ def output(unique_groups):
         group_json = {'name':unique_group, 'gid':group[0], 'members_count':group[1]}
         ans.append(group_json)
         time.sleep(2)
-    ans = json.dumps(ans, ensure_ascii=False)
-    with open('groups.json', 'w') as f:
+    ans = json.dumps(ans, ensure_ascii=False, skipkeys=True)
+    with open('groups.json', 'w', encoding='utf-8') as f:
         f.write(ans)
 
 
@@ -65,7 +63,7 @@ def main():
                     user_groups.remove(group)
         except:
             print('Нельзя получить информацию о пользователе {}'.format(friend))
-        if i>= 1000:
+        if i>= 10:
             break
         time.sleep(1.5)
     output(user_groups)
