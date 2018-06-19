@@ -45,8 +45,8 @@ def output(unique_groups):
         group_json = {'name':group[0][0]['name'], 'gid':group[0][0]['id'], 'members_count':group[1]['count']}
         ans.append(group_json)
         time.sleep(2)
-    ans = json.dumps(ans)
-    print(ans)
+    with open('groups.json', 'w') as f:
+        f.write(json.dumps(ans))
 
 
 def main():
